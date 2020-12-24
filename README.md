@@ -155,3 +155,77 @@ function destroy(callbackFunction) {
 Callbacks are a common paradigm in JavaScript due to the fact that functions can be easily stored in variables and passed around. This feature isn't as prevalent in some languages, thus isn't quite as popular a methodology.
 
 So we leverage the callback to only end the response once the session has been successfully destroyed. This may not be desired functionality at times, you may be more interested in returning early from the request.
+
+## Part 2: The Less Temporary Store
+
+There's a problem with our code from part 1, and it's one I've mentioned a few times now. The sessions are in-memory.
+
+That means that when you close the app, you delete the sessions. Try it out, launch the app and log in, then stop the application. Launch again and voila, you are logged out. That's the downside of an in-memory store and one of the reasons why in-memory is not a good idea for production servers; if your server were to go down, even for a millisecond, you would lose all your users' session information.
+
+> Note: In-memory also isn't scalable. If one server is storing the login information in one database, then the user is married to that server; the other server(s) have no idea about that user's session, and therefore if that server goes down, the scaling ment very little to the user and your apps redundancy is very low
+
+So let's fix that, let's replace the session store with a very basic file store. File stores are again, not the best idea in a production environment, but they have more longevity than an in-memory store since they will survive as long as the disc isn't cleaned out.
+
+### Installing the new package
+
+Let's utilize the [session-file-store](https://www.npmjs.com/package/session-file-store) package, which is designed to work closely with the express-session middleware. We don't make many changes, essentially just a two line change.
+
+First, import the library like you would any other libarary.
+
+```js
+const fileStoreLib = require("session-file-store");
+```
+
+Next, lets tell it about our session library, so it can utilize it to manage the session.
+
+```js
+const FileStore = fileStoreLib(session);
+```
+
+This provides us with a class that we can instantiate to work as our store. Finally, when we're registering the the middleware, we pass it our new store
+
+```js
+const sessionMiddleware = session({
+  secret: "another secret",
+  store: new FileStore(),
+});
+```
+
+> Note: The FileStore constructor takes in an option object. [Check out the documentation if you want to customize your store](https://www.npmjs.com/package/session-file-store) a little bit
+
+And that's it, we pass the middleware in as we did before and the rest of the code is the same as before. "But Mike" I hear you say, "that's a three line change!" Well they can be condensed a bit more, I'm just being unecessarily verbose.
+
+```js
+const FileStore = require("session-file-store")(session);
+
+app.use(
+  session({
+    secret: "another secret",
+    store: new FileStore(),
+  })
+);
+```
+
+### Running our new store
+
+Run the application using the part2 command
+
+```npm
+npm run part2
+```
+
+And you'll notice... well nothing. Nothing has changed from the user's perspective. That's one powerful thing about the session pipeline, it does not require any changes on the "front-end" part of the application; all the sign in code can continue to work the same, all you have to do is change the middleware, which allows you to swap out session storage methods however you'd like. We could decide we don't like our MongoDB store because it takes too long, so we can swap it out with Redis without changing anything but a line or two (this will disconnect the user's session, but a small price to pay).
+
+So what does it mean to have a file store now? Well let's check out the file system
+
+Notice that there's a new directory `session` that wasn't there before.
+
+> Note: I have added this directory to the .gitignore file so that it isn't included in Git source control. We don't want to upload this information to our repository
+
+If we list the contents of the directory, we see a new JSON file
+
+The actual name of the file will be different from mine. Or anybody else's. The filename is the session ID of the session, so it is unique and random. Finally, let's open it up and see what's inside
+
+> Note: I'm using a python tool to print the JSON in a little more readable format
+
+The contents of the file are what we transform into our `req.body` property (or should I say the middleware does it for us). Feel free to explore the JSON, but take special note that we have our `username` property right there. This is where our middleware is storing the session information instead of in-memory. This will be a more stable storage solution (admittedly slower solution, but most solutions are a balance between speed and reliability and cost) which will survive any server hiccups that may occur without logging the user out before they're ready.
