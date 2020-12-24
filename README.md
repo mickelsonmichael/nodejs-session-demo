@@ -162,7 +162,7 @@ There's a problem with our code from part 1, and it's one I've mentioned a few t
 
 That means that when you close the app, you delete the sessions. Try it out, launch the app and log in, then stop the application. Launch again and voila, you are logged out. That's the downside of an in-memory store and one of the reasons why in-memory is not a good idea for production servers; if your server were to go down, even for a millisecond, you would lose all your users' session information.
 
-> Note: In-memory also isn't scalable. If one server is storing the login information in one database, then the user is married to that server; the other server(s) have no idea about that user's session, and therefore if that server goes down, the scaling ment very little to the user and your apps redundancy is very low
+> Note: In-memory also isn't scalable. If one server is storing the login information in one database, then the user is married to that server; the other server(s) have no idea about that user's session, and therefore if that server goes down, the scaling meant very little to the user and your apps redundancy is very low
 
 So let's fix that, let's replace the session store with a very basic file store. File stores are again, not the best idea in a production environment, but they have more longevity than an in-memory store since they will survive as long as the disc isn't cleaned out.
 
@@ -243,3 +243,5 @@ The contents of the file are what we transform into our `req.body` property (or 
 ## Summary
 
 We can replace the middleware with any kind of storage solution we'd like. There's a big long list in the express-session documentation so you can pick whichever you'd like. You could also wrap your own if you're feeling adventurous, but just be ready for some work; it's not the simplest thing to do if you aren't comfortable with the pipeline.
+
+Sessions are used to store user-specific data, and can be used to tarck any information about the user you'd like, most notably the user login information. Therefore, it's a very important thing to get right.
