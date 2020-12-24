@@ -60,7 +60,7 @@ app.post("/login", (req, res) => {
     req.session.username = req.body.username; // Assign a value to our session
     res.redirect("/"); // Send them home
   } else {
-    res.sendStatus(403); // Send a forbidden response because they didn't enter anything in the text box
+    res.sendStatus(400); // Send a 400 response because they didn't enter anything in the text box
   }
 
   res.end();

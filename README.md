@@ -22,6 +22,8 @@ A session is a browser-specific set of information **stored on the server**. Whe
 
 Once a session is generated, the browser will then send the session ID in as part of the request headers. The session middleware will then grab the ID from the headers and retrieve the session data from a back-end store. The store can be an in-memory store, but that it generally bad for production scenarios, where it is better to store it in a cache (like Redis) or database (like MongoDB).
 
+It's worth noting that the exact implementation of how sessions are stored and communicated to the server may change depending on the implemenation. But in our case, it will be using headers and cookies.
+
 ## Creating an Express Session
 
 To start off, import the session library by using `const session = require("express-session");`. This will give you an entrypoint into the library's many features. If you are starting a new project instead of using the demo provided in the `app.js` file, you will need to install both express and express-session via npm.
@@ -44,7 +46,7 @@ This step is generally combined with the `app.Use` method as specified later, bu
 
 You can read more about the `secret` in the expressjs documentation for sessions here: https://github.com/expressjs/session#secret
 
-THe return value from the `session` method is a function. If you're using a modern IDE, you can see that if you attempt to call the method, you will be shown a list of parameters that you can pass in
+The return value from the `session` method is a function. If you're using a modern IDE, you can see that if you attempt to call the method, you will be shown a list of parameters that you can pass in
 
 ![image](https://i.imgur.com/g8wqlId.png)
 
