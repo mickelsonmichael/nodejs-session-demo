@@ -216,6 +216,8 @@ npm run part2
 
 And you'll notice... well nothing. Nothing has changed from the user's perspective. That's one powerful thing about the session pipeline, it does not require any changes on the "front-end" part of the application; all the sign in code can continue to work the same, all you have to do is change the middleware, which allows you to swap out session storage methods however you'd like. We could decide we don't like our MongoDB store because it takes too long, so we can swap it out with Redis without changing anything but a line or two (this will disconnect the user's session, but a small price to pay).
 
+What's really the important difference here is the lifetime of the session. Try stopping the application and restarting. You're still logged in. This is beacuse the storage is now stored in a file instead of the application's memory.
+
 ### Where is our store stored
 
 So what does it mean to have a file store now? Well let's check out the file system
