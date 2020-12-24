@@ -6,7 +6,7 @@ To start off, install the required packages using
 npm install
 ```
 
-If you are curious which packages have been added to the project, check out the `packages.json` file, or you can run the `npm list --depth=0` command. Once they are installed, you can run the `start` command to begin running the web server, then navigate to `localhost:3000` to view it in your browser.
+If you are curious which packages have been added to the project, check out the `packages.json` file, or you can run the `npm list --depth=0` command. Once they are installed, you can run the `start` or `part1` command to begin running the first version of our web server, then navigate to `localhost:3000` to view it in your browser.
 
 ```bash
 npm run start
@@ -14,7 +14,7 @@ npm run start
 
 When you're done, stop the application in your shell by pressing `Ctrl+C`.
 
-The following sections describe sessions in detail. **A demonstration of the topics can be found in the `app.js` file.**
+The following sections describe sessions in detail. **A demonstration of the topics can be found in the `part1.js` file.**
 
 ## What is a Session
 
@@ -26,7 +26,7 @@ It's worth noting that the exact implementation of how sessions are stored and c
 
 ## Creating an Express Session
 
-To start off, import the session library by using `const session = require("express-session");`. This will give you an entrypoint into the library's many features. If you are starting a new project instead of using the demo provided in the `app.js` file, you will need to install both express and express-session via npm.
+To start off, import the session library by using `const session = require("express-session");`. This will give you an entrypoint into the library's many features. If you are starting a new project instead of using the demo provided in the `part1.js` file, you will need to install both express and express-session via npm.
 
 ```
 npm install express express-session
@@ -215,6 +215,8 @@ npm run part2
 ```
 
 And you'll notice... well nothing. Nothing has changed from the user's perspective. That's one powerful thing about the session pipeline, it does not require any changes on the "front-end" part of the application; all the sign in code can continue to work the same, all you have to do is change the middleware, which allows you to swap out session storage methods however you'd like. We could decide we don't like our MongoDB store because it takes too long, so we can swap it out with Redis without changing anything but a line or two (this will disconnect the user's session, but a small price to pay).
+
+### Where is our store stored
 
 So what does it mean to have a file store now? Well let's check out the file system
 

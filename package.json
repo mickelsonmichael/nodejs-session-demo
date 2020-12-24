@@ -4,7 +4,8 @@
   "description": "A demonstration of how a session would work in NodeJS",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node part1.js",
+    "part1": "node part1.js",
     "part2": "node part2.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

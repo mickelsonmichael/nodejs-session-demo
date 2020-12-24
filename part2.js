@@ -1,4 +1,4 @@
-// For additional notes, see the app.js file from part 1
+// For additional notes, see the part1.js
 console.log("Starting FileStore demo...");
 
 const express = require("express");
@@ -24,7 +24,7 @@ const fileStoreMiddleware = session({
 app.use(fileStoreMiddleware); // add the middleware to the pipelien
 
 // That's it.
-// The rest of the code below is identical to app.js
+// The rest of the code below is identical to part1.js
 // but with all of the comments stripped out
 
 app.get("/", (req, res) => {
