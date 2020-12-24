@@ -116,9 +116,9 @@ app.get("/", (req, res) => {
 });
 ```
 
-We're checking for our user to be "logged in" by checking the `req.session.username` field. We _aren't_ checking if `req.session` exists because it will automatically exist when it is created when the user first loads the web page. It should normally never be undefined, unless the user manipulates their request manually or sends it via something other than a browser.
+We're checking for our user to be "logged in" by checking the `req.session.username` field. We _aren't_ checking if `req.session` exists because it will automatically exist when it is created when the user first loads the web page. It should normally never be undefined, it is created upon the first request from the browser, so even if it's a first-time request, it will be generated before it gets to our code. The only time it would be undefined is if the middleware didn't instantiate it right.
 
-We can "log" the user in using the code below
+We can "log in" the user using the code below
 
 ```js
 app.post("/login", (req, res) => {
@@ -214,7 +214,7 @@ Run the application using the part2 command
 npm run part2
 ```
 
-And you'll notice... well nothing. Nothing has changed from the user's perspective. That's one powerful thing about the session pipeline, it does not require any changes on the "front-end" part of the application; all the sign in code can continue to work the same, all you have to do is change the middleware, which allows you to swap out session storage methods however you'd like. We could decide we don't like our MongoDB store because it takes too long, so we can swap it out with Redis without changing anything but a line or two (this will disconnect the user's session, but a small price to pay).
+And you'll notice... well nothing. Nothing has changed from the user's perspective. That's one powerful thing about the middleware pipeline, it does not require any changes on the "front-end" part of the application; all the sign in code can continue to work the same, all you have to do is change the middleware, which allows you to swap out session storage methods however you'd like. We could decide we don't like our current store because it takes too long, so we can swap it out with Redis without changing anything but a line or two (this will disconnect the user's session, but that's a small price to pay).
 
 What's really the important difference here is the lifetime of the session. Try stopping the application and restarting. You're still logged in. This is beacuse the storage is now stored in a file instead of the application's memory.
 
@@ -222,7 +222,7 @@ What's really the important difference here is the lifetime of the session. Try 
 
 So what does it mean to have a file store now? Well let's check out the file system
 
-![ls](https://i.imgur.com/2Zku6w8.png)
+![ls](https://i.imgur.com/gsGDiJC.png)
 
 Notice that there's a new directory `session` that wasn't there before.
 
@@ -238,10 +238,10 @@ The actual name of the file will be different from mine. Or anybody else's. The 
 
 > Note: I'm using a python tool to print the JSON in a little more readable format
 
-The contents of the file are what we transform into our `req.body` property (or should I say the middleware does it for us). Feel free to explore the JSON, but take special note that we have our `username` property right there. This is where our middleware is storing the session information instead of in-memory. This will be a more stable storage solution (admittedly slower solution, but most solutions are a balance between speed and reliability and cost) which will survive most server hiccups that may occur without logging the user out before they're ready.
+The contents of the file are what we transform into our `req.body` property (or should I say the middleware does it for us). Take special note that we have our `username` property right there. This is where our middleware is storing the session information instead of in-memory. This will be a more stable storage solution (admittedly slower solution, but most solutions are a balance between speed and reliability and cost) which will survive most server hiccups that may occur without logging the user out before they're ready.
 
 ## Summary
 
-We can replace the middleware with any kind of storage solution we'd like. There's a big long list in the express-session documentation so you can pick whichever you'd like. You could also wrap your own if you're feeling adventurous, but just be ready for some work; it's not the simplest thing to do if you aren't comfortable with the pipeline.
+We can replace the middleware with any kind of storage solution we'd like. There's a [big long list in the express-session documentation](https://github.com/expressjs/session#compatible-session-stores) so you can pick whichever you'd like. You could also wrap your own if you're feeling adventurous, but just be ready for some work; it's not the simplest thing to do if you aren't comfortable with the pipeline and how it works.
 
-Sessions are used to store user-specific data, and can be used to tarck any information about the user you'd like, most notably the user login information. Therefore, it's a very important thing to get right.
+Sessions are used to store user-specific data, and can be used to track any information about the user you'd like, most notably the user login information. Therefore, it's a very important thing to get right. And it's important to choose the best session storage method for you rapplication.
