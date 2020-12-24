@@ -237,3 +237,7 @@ The actual name of the file will be different from mine. Or anybody else's. The 
 > Note: I'm using a python tool to print the JSON in a little more readable format
 
 The contents of the file are what we transform into our `req.body` property (or should I say the middleware does it for us). Feel free to explore the JSON, but take special note that we have our `username` property right there. This is where our middleware is storing the session information instead of in-memory. This will be a more stable storage solution (admittedly slower solution, but most solutions are a balance between speed and reliability and cost) which will survive most server hiccups that may occur without logging the user out before they're ready.
+
+## Summary
+
+We can replace the middleware with any kind of storage solution we'd like. There's a big long list in the express-session documentation so you can pick whichever you'd like. You could also wrap your own if you're feeling adventurous, but just be ready for some work; it's not the simplest thing to do if you aren't comfortable with the pipeline.
