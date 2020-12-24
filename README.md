@@ -220,14 +220,20 @@ And you'll notice... well nothing. Nothing has changed from the user's perspecti
 
 So what does it mean to have a file store now? Well let's check out the file system
 
+![ls](https://i.imgur.com/2Zku6w8.png)
+
 Notice that there's a new directory `session` that wasn't there before.
 
 > Note: I have added this directory to the .gitignore file so that it isn't included in Git source control. We don't want to upload this information to our repository
 
 If we list the contents of the directory, we see a new JSON file
 
+![ls sessions](https://i.imgur.com/kcdoNe6.png)
+
 The actual name of the file will be different from mine. Or anybody else's. The filename is the session ID of the session, so it is unique and random. Finally, let's open it up and see what's inside
+
+![python -m json.tool sessions/{filename}.json](https://i.imgur.com/IxoTTms.png)
 
 > Note: I'm using a python tool to print the JSON in a little more readable format
 
-The contents of the file are what we transform into our `req.body` property (or should I say the middleware does it for us). Feel free to explore the JSON, but take special note that we have our `username` property right there. This is where our middleware is storing the session information instead of in-memory. This will be a more stable storage solution (admittedly slower solution, but most solutions are a balance between speed and reliability and cost) which will survive any server hiccups that may occur without logging the user out before they're ready.
+The contents of the file are what we transform into our `req.body` property (or should I say the middleware does it for us). Feel free to explore the JSON, but take special note that we have our `username` property right there. This is where our middleware is storing the session information instead of in-memory. This will be a more stable storage solution (admittedly slower solution, but most solutions are a balance between speed and reliability and cost) which will survive most server hiccups that may occur without logging the user out before they're ready.
