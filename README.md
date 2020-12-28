@@ -6,27 +6,29 @@ To start off, install the required packages using
 npm install
 ```
 
-If you are curious which packages have been added to the project, check out the `packages.json` file, or you can run the `npm list --depth=0` command. Once they are installed, you can run the `start` or `part1` command to begin running the first version of our web server, then navigate to `localhost:3000` to view it in your browser.
+Once they are installed, you can run the `start` or `part1` command to begin running the first version of our web server, then navigate to `localhost:3000` to view it in your browser.
+
+> TIP: If you want to know which packages are installed, you can either look at packages.json directly or run the `npm list` command. If you want to list only top level packages and not their dependencies, you can use `npm list --depth=0`
 
 ```bash
 npm run start
 ```
 
-When you're done, stop the application in your shell by pressing `Ctrl+C`.
+When you're done viewing the site, you can navigate back to your shell and press `Ctrl+C` to shut it down.
 
 The following sections describe sessions in detail. **A demonstration of the topics can be found in the `part1.js` file.**
 
 ## What is a Session
 
-A session is a browser-specific set of information **stored on the server**. When a session is generated for the browser, the server creates a unique session ID, which is sent back to the user in the headers and then stored in a broswer cookie. This means that if you switch browsers or clear the cookies, you will "log out" of the session.
+A session is a browser-specific set of information **stored on the server**. When a session is generated for the browser, the server creates a unique session ID, which is sent back to the user in the headers and then stored in a browser cookie. This means that if you switch browsers or clear the cookies, you will "log out" of the session.
 
 Once a session is generated, the browser will then send the session ID in as part of the request headers. The session middleware will then grab the ID from the headers and retrieve the session data from a back-end store. The store can be an in-memory store, but that it generally bad for production scenarios, where it is better to store it in a cache (like Redis) or database (like MongoDB).
 
-It's worth noting that the exact implementation of how sessions are stored and communicated to the server may change depending on the implemenation. But in our case, it will be using headers and cookies.
+It's worth noting that the exact implementation of how sessions are stored and communicated to the server may change depending on the implementation. But in our case, it will be using headers and cookies.
 
 ## Creating an Express Session
 
-To start off, import the session library by using `const session = require("express-session");`. This will give you an entrypoint into the library's many features. If you are starting a new project instead of using the demo provided in the `part1.js` file, you will need to install both express and express-session via npm.
+To start off, import the session library by using `const session = require("express-session");`. This will give you an entry point into the library's many features. If you are starting a new project instead of using the demo provided in the `part1.js` file, you will need to install both express and express-session via npm.
 
 ```
 npm install express express-session
@@ -50,7 +52,7 @@ The return value from the `session` method is a function. If you're using a mode
 
 ![image](https://i.imgur.com/g8wqlId.png)
 
-> Note: The name `session` is arbitary. We determined it when we imported the package with the `const session = require()` call; we could have called it anything we like, it's up to us. But session is how it is named in all the documentation, so we stick with it for consistency
+> Note: The name `session` is arbitrary. We determined it when we imported the package with the `const session = require()` call; we could have called it anything we like, it's up to us. But session is how it is named in all the documentation, so we stick with it for consistency
 
 You don't really need to concern yourself with the parameters at a high level, just know that it is a function that will be called by express when the time comes.
 
@@ -58,9 +60,9 @@ You don't really need to concern yourself with the parameters at a high level, j
 
 This section is optional; you don't need it to run the code, but you do need it to **understand** the code at a deeper level.
 
-When a request comes in to Express, it is routed through what is generally known as a "middleware pipeline". This concept is not unique to express, and is a common way to handle requests. Essentially, when the request comes in, express routes it through a series of serverices, called "middleware". Each middleware takes in the request and response, and can do whatever it likes with it before passing it on to the next middleware in the chain. Or, if it so chooses, stop the chain early and skip the remaining middleware.
+When a request comes in to Express, it is routed through what is generally known as a "middleware pipeline". This concept is not unique to express, and is a common way to handle requests. Essentially, when the request comes in, express routes it through a series of services, called "middleware". Each middleware takes in the request and response, and can do whatever it likes with it before passing it on to the next middleware in the chain. Or, if it so chooses, stop the chain early and skip the remaining middleware.
 
-Once all the configured middleware has been passed, the request is sent finally to our code, which could be thought of as the final middleware layer before the response is sent back (although it may be the case that more middleware modifies the response message on the way out).
+Once all the configured middleware has been passed, the request is finally sent to our code, which could be thought of as the final middleware layer before the response is sent back (although it may be the case that more middleware modifies the response message on the way out).
 
 ## Adding the Session Middleware
 
@@ -94,7 +96,7 @@ If no session is found, a new one is created for the user, and the session ID is
 
 ![The cookie in the response](https://i.imgur.com/r4U3S99.png)
 
-Next request we make, the browser will automatically add the session ID in as part of the header, which the sesion middleware will then read and use to retrieve the user's session from the store.
+Next request we make, the browser will automatically add the session ID in as part of the header, which the session middleware will then read and use to retrieve the user's session from the store.
 
 ![The cookie in the request](https://i.imgur.com/qaNxf7v.png)
 
@@ -130,7 +132,7 @@ app.post("/login", (req, res) => {
 
 When we modify `req.session.username` it is updated by the session store, and the value will be available as part of the next request.
 
-## Destorying the Session
+## Destroying the Session
 
 When we're done with our session and we want to "log out" the browser, we can simply use the `destroy` method on the session (or alternatively can just clear our `req.session.username`, since there may be other things we're tracking as part of our session).
 
@@ -142,7 +144,7 @@ app.get("/logout", (req, res) => {
 });
 ```
 
-The destory method takes in a callback method. A callback method is a method that is called once the `destroy` method has fully completed. The signature for `destory` could be distilled to something like this then
+The destroy method takes in a callback method. A callback method is a method that is called once the `destroy` method has fully completed. The signature for `destory` could be distilled to something like this then
 
 ```js
 function destroy(callbackFunction) {
@@ -170,7 +172,7 @@ So let's fix that, let's replace the session store with a very basic file store.
 
 Let's utilize the [session-file-store](https://www.npmjs.com/package/session-file-store) package, which is designed to work closely with the express-session middleware. We don't make many changes, essentially just a two line change.
 
-First, import the library like you would any other libarary.
+First, import the library like you would any other library.
 
 ```js
 const fileStoreLib = require("session-file-store");
@@ -182,7 +184,7 @@ Next, lets tell it about our session library, so it can utilize it to manage the
 const FileStore = fileStoreLib(session);
 ```
 
-This provides us with a class that we can instantiate to work as our store. Finally, when we're registering the the middleware, we pass it our new store
+This provides us with a class that we can instantiate to work as our store. Finally, when we're registering the middleware, we pass it our new store
 
 ```js
 const sessionMiddleware = session({
@@ -193,7 +195,7 @@ const sessionMiddleware = session({
 
 > Note: The FileStore constructor takes in an option object. [Check out the documentation if you want to customize your store](https://www.npmjs.com/package/session-file-store) a little bit
 
-And that's it, we pass the middleware in as we did before and the rest of the code is the same as before. "But Mike" I hear you say, "that's a three line change!" Well they can be condensed a bit more, I'm just being unecessarily verbose.
+And that's it, we pass the middleware in as we did before and the rest of the code is the same as before. "But Mike" I hear you say, "that's a three line change!" Well they can be condensed a bit more, I'm just being unnecessarily verbose.
 
 ```js
 const FileStore = require("session-file-store")(session);
@@ -208,7 +210,7 @@ app.use(
 
 ### Running our new store
 
-Run the application using the part2 command
+Run the application using the `part2` command
 
 ```npm
 npm run part2
@@ -216,7 +218,7 @@ npm run part2
 
 And you'll notice... well nothing. Nothing has changed from the user's perspective. That's one powerful thing about the middleware pipeline, it does not require any changes on the "front-end" part of the application; all the sign in code can continue to work the same, all you have to do is change the middleware, which allows you to swap out session storage methods however you'd like. We could decide we don't like our current store because it takes too long, so we can swap it out with Redis without changing anything but a line or two (this will disconnect the user's session, but that's a small price to pay).
 
-What's really the important difference here is the lifetime of the session. Try stopping the application and restarting. You're still logged in. This is beacuse the storage is now stored in a file instead of the application's memory.
+What's really the important difference here is the lifetime of the session. Try stopping the application and restarting. You're still logged in. This is because the storage is now stored in a file instead of the application's memory.
 
 ### Where is our store stored
 
@@ -244,4 +246,5 @@ The contents of the file are what we transform into our `req.body` property (or 
 
 We can replace the middleware with any kind of storage solution we'd like. There's a [big long list in the express-session documentation](https://github.com/expressjs/session#compatible-session-stores) so you can pick whichever you'd like. You could also wrap your own if you're feeling adventurous, but just be ready for some work; it's not the simplest thing to do if you aren't comfortable with the pipeline and how it works.
 
-Sessions are used to store user-specific data, and can be used to track any information about the user you'd like, most notably the user login information. Therefore, it's a very important thing to get right. And it's important to choose the best session storage method for you rapplication.
+Sessions are used to store user-specific data, and can be used to track any information about the user you'd like, most notably the user login information. Therefore, it's a very important thing to get right. And it's important to choose the best session storage method for your application.
+
